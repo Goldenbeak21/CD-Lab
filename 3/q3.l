@@ -25,31 +25,12 @@ int main(int argc, char*argv[])
 { 
     extern FILE *yyin, *yyout;
 
-    yyin = fopen("i.txt", "r");
-    yyout = fopen("o.txt", "w");
+    yyin = fopen("input1.txt", "r");
+    yyout = fopen("ouput1.txt", "w");
 
 	yylex(); 
 	return 0; 
 } 
-
-int checktable(char *str)
-{
-	//printf("here:%s",str);
-
-	for(int j=0;j<i;j++){
-		//printf("Codestart---\n%s: => %d\nCodeEnd\n",arr[j],j);
-	}
-	for(int j=0;j<i;j++){
-		if(strcmp(str,arr[j])==0){
-			//printf("\nGot%s: => %d\n\n\n",str,j);
-			return j;
-		}
-	}
-	arr[i++] = str;	
-	//printf("Here:%d and %s\n",i-1,arr[i-1]);
-
-	return (i-1);
-}
 
 void check(char *str)
 {
@@ -62,5 +43,5 @@ void check(char *str)
 	else if(strcmp(str,"while")==0) printf("while");
 	else if(strcmp(str,"read")==0) printf("read");
 	else if(strcmp(str,"print")==0) printf("print");
-	else {printf("<id,%d>",checktable(str));}
+	else {printf("id");}
 }
