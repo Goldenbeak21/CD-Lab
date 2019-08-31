@@ -1,12 +1,15 @@
 ## Assignment 7
 ### Using LEX and YACC together
 
-lex.l -> prints the identified tokens in the sample input.  
-assign7.l -> returns tokens to the yacc file.  
-assign7.y -> creates the parser using the grammar.  
+|||
+| --- | --- |
+| lex.l | Prints the identified tokens in the sample input |
+| assign7.l | Returns tokens to the yacc file |
+| assign7.y | Creates the parser using the grammar |
 
 
 The input has been set to `input.txt` in the main function of `assign7.y`.  
+All the intermediate files are deleted by `run.sh`.  
 
 ### Running
 Compiles, runs the parser and prints if the sample input is valid and the line number where it went wrong, in case its not valid.
@@ -17,5 +20,3 @@ Compiles, produces the tokenised form of the sample input, runs the parser, prod
 ```
 ./run.sh debug
 ```
-All the intermediate files are deleted.  
-You can compile the files individually too.  
