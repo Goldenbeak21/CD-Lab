@@ -163,6 +163,10 @@ actParamList : actParamList COMMA exp
 
 %%
 
+#ifdef YYDEBUG
+int yydebug=1;
+#endif
+
 extern int yylex();
 extern int yyparse();
 
@@ -173,9 +177,9 @@ void yyerror(char *s){
 
 int main(){
 
-    extern FILE *yyin, *yyout;
+  extern FILE *yyin, *yyout;
 
-    yyin = fopen("input.txt", "r");
+  yyin = fopen("input.txt", "r");
 
 	yyparse();
 
