@@ -7,24 +7,24 @@
 	int yylex();
 	void yyerror(char *s);
 %}
+%locations
 
-%token AND  ASSIGN  COLON  COMMA  DEF  DIV  DOT  ELSE  END  EQ  EXITLOOP  FLOAT  FROM  FUN  GE  GLOBAL  GT  IF  INT  LEFT_PAREN  LEFT_SQ_BKT  LE  LT  MINUS  MOD  MULT  NE  NOT  NUL  OR  PLUS  PRINT  PRODUCT  READ  RETURN  RIGHT_PAREN  RIGHT_SQ_BKT  SEMICOLON  SKIP  STEP  TO  WHILE  ID  STRING  INT_CONST  FLOAT_CONST  FORMAT
+%token AND  ASSIGN  COLON  COMMA  DEF  DIV  DOT  ELSE  END  EQ  EXITLOOP  FLOAT  FROM  FUN  GE  GLOBAL  GT  IF  INT  LEFT_PAREN  LEFT_SQ_BKT  LE  LT  MINUS  MOD  MULT  NE  NOT  NUL  OR  PLUS  PRINT  PRODUCT  READ  RETURN  RIGHT_PAREN  RIGHT_SQ_BKT  SEMICOLON  SKIP  STEP  TO  WHILE  ID  STRING  INT_CONST  FLOAT_CONST  FORMAT RETURNS
 
 %start prog
 
 %left PLUS MINUS
 %left MULT DIV MOD
-%left DOT
+%left DOT NOT
 %left AND OR
-%nonassoc NOT
 %left RIGHT_SQ_BKT LEFT_SQ_BKT
 %left RIGHT_PAREN LEFT_PAREN
 
 %%
 
-prog : GLOBAL declList stmtListO END '\n' {printf("string valid\n");};
+prog : GLOBAL declList stmtListO END {printf("string valid\n");};
 declList : decl declList
-	 | '$'	
+	 | /*epsilon*/
 	 ;
 decl : DEF typeList END
      | FUN funDef END
@@ -39,7 +39,7 @@ varList : var COMMA varList
 var : ID sizeListO
     ;
 sizeListO : sizeList
-	  | '$'
+	  | /*epsilon*/
 	  ;
 sizeList : sizeList LEFT_SQ_BKT INT_CONST RIGHT_SQ_BKT
 	 | LEFT_SQ_BKT INT_CONST RIGHT_SQ_BKT
@@ -52,13 +52,13 @@ type : INT
      | ID
      ;
 typeDef : ID ASSIGN PRODUCT typeList END
-	;
-funDef : funID fparamListO RETURN type funBody
+		;
+funDef : funID fparamListO RETURNS type funBody
        ;
 funID : ID
       ;
 fparamListO : fparamList
-			|
+			| /*epsilon*/
 			;
 fparamList : fparamList SEMICOLON pList COLON type
 	    | pList COLON type
@@ -71,7 +71,7 @@ idP : ID sizeListO
 funBody : declList stmtListO
 	;
 stmtListO : stmtList
-	  |
+	  | /*epsilon*/
 	  ;
 stmtList : stmtList SEMICOLON stmt
 		| stmt
@@ -100,21 +100,21 @@ printStmt : PRINT STRING
 ifStmt : IF bExp COLON stmtList elsePart END
        ;
 elsePart : ELSE stmtList
-	 |
+	 | /*epsilon*/
  	 ;
 whileStmt : WHILE bExp COLON stmtList END
 	  ;
-loopStmt : FROM id ASSIGN exp TO stepPart COLON stmtListO END
+loopStmt : FROM id ASSIGN exp TO exp stepPart COLON stmtListO END
 	 ;
 stepPart : STEP exp
-	 |
+	 | /*epsilon*/
 	 ;
 callStmt : LEFT_PAREN ID COLON actParamList RIGHT_PAREN
 	 ;
 returnStmt : RETURN expO
 	   ;
 expO : exp
-     |
+     | /*epsilon*/
      ;
 exitLoop : EXITLOOP
 	 ;
@@ -123,7 +123,7 @@ skip : SKIP
 id : ID indxListO
    ;
 indxListO : indxList
-	  |
+	  | /*epsilon*/
 	  ;
 indxList : indxList LEFT_SQ_BKT exp RIGHT_SQ_BKT
 	 | LEFT_SQ_BKT exp RIGHT_SQ_BKT
@@ -155,7 +155,7 @@ exp : exp PLUS exp
     | FLOAT_CONST
     ;
 actParamListO : actParamList
-	      |
+	      | /*epsilon*/
 	      ;
 actParamList : actParamList COMMA exp
 	     | exp
@@ -165,17 +165,19 @@ actParamList : actParamList COMMA exp
 
 extern int yylex();
 extern int yyparse();
-extern int line_num;
 
 void yyerror(char *s){
-	printf("Error: %s at line %d\n",s, line_num);
+	printf("Error | Line: %d\n%s\n",yylineno,s);
 	exit(-1);
 }
 
 int main(){
 
+    extern FILE *yyin, *yyout;
+
+    yyin = fopen("input.txt", "r");
+
 	yyparse();
 
-	printf("Accepted\n");
 	return 0;
 }

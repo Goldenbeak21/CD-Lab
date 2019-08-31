@@ -31,7 +31,7 @@ global
 	while awe > qwe:
 		print "# 123QWE";
 		awe := qwe + 1;
-		qwe = qwe + 2
+		qwe := qwe + 2
 	end;
 
 	if awe <> qwe or awe <> qwe or qwe + abc > 50 and not((abc  = 10.234) or  10.234  <= qwe and not qwe > 50) or qwe <> abc:
@@ -53,4 +53,6 @@ global
 	print "ABC";
 	read %f abc  + 10.234  mod qwe / 50;
 
-	read %s some
+	read %s someID0 [id1 + id2][id3 - id4]
+
+end

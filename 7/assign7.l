@@ -2,106 +2,62 @@
 	#include<stdio.h>
 	#include<stdlib.h>
 	#include<string.h>
-	int line_num = 1;
 %}
 
-AND				[and]
-ASSIGN			[:=]
-COLON			[:]
-COMMA			[,]
-DEF				[def]
-DIV				[/]
-DOT				[.]
-ELSE			[else]
-END				[end]
-EQ				[=]
-EXITLOOP		[exit]
-FLOAT			[float]
-FROM			[from]
-FUN				[fun]
-GE				[>=]
-GLOBAL			[global]
-GT				[>]
-IF				[if]
-INT				[int]
-LEFT_PAREN		[(]
-LEFT_SQ_BKT		[[]
-LE				[<=]
-LT				[<]
-MINUS			[-]
-MOD				[mod]
-MULT			[*]
-NE				[<>]
-NOT				[not]
-NUL				[null]
-OR				[or]
-PLUS			[+]
-PRINT			[print]
-PRODUCT			[product]
-READ			[read]
-RETURN			[return]
-RIGHT_PAREN		[)]
-RIGHT_SQ_BKT	[]]
-SEMICOLON		[;]
-SKIP			[skip]
-STEP			[step]
-TO				[to]
-WHILE			[while]
-ID				[a-zA-z]([a-zA-z]|[0-9])*
-STRING			["][a-zA-z]+["]
-INT_CONST		[0-9]+
-FLOAT_CONST		[0-9]+[.][0-9]+
-FORMAT			[%d|%f|%s]
+%option yylineno 
 
 %%
 
-AND				{return AND;}
-ASSIGN			{return ASSIGN;}
-COLON			{return COLON;}
-COMMA			{return COMMA;}
-DEF				{return DEF;}
-DIV				{return DIV;}
-DOT				{return DOT;}
-ELSE			{return ELSE;}
-END				{return END;}
-EQ				{return EQ;}
-EXITLOOP		{return EXITLOOP;}
-FLOAT			{return FLOAT;}
-FROM			{return FROM;}
-FUN				{return FUN;}
-GE				{return GE;}
-GLOBAL			{return GLOBAL;}
-GT				{return GT;}
-IF				{return IF;}
-INT				{return INT;}
-LEFT_PAREN		{return LEFT_PAREN;}
-LEFT_SQ_BKT		{return LEFT_SQ_BKT;}
-LE				{return LE;}
-LT				{return LT;}
-MINUS			{return MINUS;}
-MOD				{return MOD;}
-MULT			{return MULT;}
-NE				{return NE;}
-NOT				{return NOT;}
-NUL				{return NUL;}
-OR				{return OR;}
-PLUS			{return PLUS;}
-PRINT			{return PRINT;}
-PRODUCT			{return PRODUCT;}
-READ			{return READ;}
-RETURN			{return RETURN;}
-RIGHT_PAREN		{return RIGHT_PAREN;}
-RIGHT_SQ_BKT	{return RIGHT_SQ_BKT;}
-SEMICOLON		{return SEMICOLON;}
-SKIP			{return SKIP;}
-STEP			{return STEP;}
-TO				{return TO;}
-WHILE			{return WHILE;}
-ID				{return ID;}
-STRING			{return STRING;}
-INT_CONST		{return INT_CONST;}
-FLOAT_CONST		{return FLOAT_CONST;}
-FORMAT			{return FORMAT;}
+"and"						{return AND;}
+":="						{return ASSIGN;}
+":"							{return COLON;}
+","							{return COMMA;}
+"def"						{return DEF;}
+"/"							{return DIV;}
+"."							{return DOT;}
+"else"						{return ELSE;}
+"end"						{return END;}
+"="							{return EQ;}
+"exit"						{return EXITLOOP;}
+"float"						{return FLOAT;}
+"from"						{return FROM;}
+"fun"						{return FUN;}
+">="						{return GE;}
+"global"					{return GLOBAL;}
+">"							{return GT;}
+"if"						{return IF;}
+"int"						{return INT;}
+"("							{return LEFT_PAREN;}
+"["							{return LEFT_SQ_BKT;}
+"<="						{return LE;}
+"<"							{return LT;}
+"-"							{return MINUS;}
+"mod"						{return MOD;}
+"*"							{return MULT;}
+"<>"						{return NE;}
+"not"						{return NOT;}
+"null"						{return NUL;}
+"or"						{return OR;}
+"+"							{return PLUS;}
+"print"						{return PRINT;}
+"product"					{return PRODUCT;}
+"read"						{return READ;}
+"return"					{return RETURN;}
+"->"						{return RETURNS;}
+")"							{return RIGHT_PAREN;}
+"]"							{return RIGHT_SQ_BKT;}
+";"							{return SEMICOLON;}
+"skip"						{return SKIP;}
+"step"						{return STEP;}
+"to"						{return TO;}
+"while"						{return WHILE;}
+[a-zA-Z][a-zA-Z0-9]+		{return ID;}
+\".*\"						{return STRING;}
+[0-9]+						{return INT_CONST;}
+[0-9]+[.][0-9]+				{return FLOAT_CONST;}
+"%d"|"%f"|"%s"				{return FORMAT;}
+"//".*						{}
+[" ""\n""\t"]				{}
 
 %%
 
