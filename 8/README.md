@@ -1,3 +1,400 @@
+# Assignment 8
+
+## Commands
+For saving the temporary files
+
+```
+gcc -S file.c
+```
+For compiling with gdb support, to check line by line source to assembly translation
+```
+gcc -g -S file.c
+```
+Then use
+```
+gdb or lldb a.out
+```
+
+## Explanation
+We have to first understand the some keywords in assembly language.
+```
+addl $42, %edi
+```  
+The `l` in `addl` means long.  
+`$` in operands means an immediate value.  
+The instruction adds `42` to `edi`.  
+```
+movq %rsp, %rbp
+```
+The `q` in `movq` means quad.  
+`%` in operands means a register.  
+The instruction moves content of `rsp` to `rbp`.  
+
+If we run the code in gdb(or lldb) with a break point set, we can run `register read` to see the contents of register at any given point.
+[lldb example](./images/lldb.png)
+
+## Registers
+* rax, rbx, rcx and rdx are general purpose registers used to hold on to intermediate values loaded from memory or used during a calculation of some kind.  
+* rsp is the stack pointer, which holds the memory location of the top of the stack.  
+* rbp is the base pointer, which holds the memory location of the base of the current stack frame.  
+* rip is the instruction pointer, which holds the memory location of the next instruction to execute.  
+* and rflags holds a series of flags, used by comparison instructions for example.
+
+## Code Explanation
+`.cfi_* ` are assembler directives.  
+
+### Simple Declaration
+
+Code
+```
+int main(){
+	int i = 10;
+	return 0;
+}
+```
+Assembly Code
+```
+	.section	__TEXT,__text,regular,pure_instructions
+	.build_version macos, 10, 15	sdk_version 10, 15
+	.globl	_main                   ## -- Begin function main
+	.p2align	4, 0x90
+_main:                                  ## @main
+	.cfi_startproc
+## %bb.0:
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset %rbp, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register %rbp
+	xorl	%eax, %eax
+	movl	$0, -4(%rbp)
+	movl	$10, -8(%rbp)
+	popq	%rbp
+	retq
+	.cfi_endproc
+                                        ## -- End function
+
+.subsections_via_symbols
+```
+Explanation : Only one `main` section exists.  
+
+| Line No | Instruction | Meaning |
+| :---: | :---: | :---: |
+| 5 | _main: | Start of the main function section |
+| 8 | pushq %rbp | Setting up stack frame |
+| 11 | movq	%rsp, %rbp | For local variables of function |
+| 13 | xorl	%eax, %eax | To set %eax to zero |
+| 14 | movl	$0, -4(%rbp) | Moving 0 to %rbp |
+| 15 | movl	$10, -8(%rbp) | Moving 42 to %rbp |
+| 16 | popq %rbp | Clean up the stack frame |
+| 17 | retq | Clean up the stack frame |
+
+### Addition Operation
+
+Code
+```
+int main(){
+	int i = 10;
+  i += 42;
+	return 0;
+}
+```
+
+Assembly
+```
+	.section	__TEXT,__text,regular,pure_instructions
+	.build_version macos, 10, 15	sdk_version 10, 15
+	.globl	_main                   ## -- Begin function main
+	.p2align	4, 0x90
+_main:                                  ## @main
+	.cfi_startproc
+## %bb.0:
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset %rbp, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register %rbp
+	xorl	%eax, %eax
+	movl	$0, -4(%rbp)
+	movl	$10, -8(%rbp)
+	movl	-8(%rbp), %ecx
+	addl	$42, %ecx
+	movl	%ecx, -8(%rbp)
+	popq	%rbp
+	retq
+	.cfi_endproc
+                                        ## -- End function
+
+.subsections_via_symbols
+```
+Explanation: A small change to add `42` to `i`
+
+| Line No | Instruction | Meaning |
+| :---: | :---: | :---: |
+| 16 | movl	-8(%rbp), %ecx | Move the value of `i` into %ecx |
+| 17 | addl	$42, %ecx | Add 42 to the value in %ecx |
+| 18 | movl	%ecx, -8(%rbp) | Move the value in %ecx to %rbp |
+
+### Conditional Statement
+
+Code
+```
+int main(){
+	int i = 10;
+  if(i==10) i += 42;
+	return 0;
+}
+```
+Assembly
+```
+	.section	__TEXT,__text,regular,pure_instructions
+	.build_version macos, 10, 15	sdk_version 10, 15
+	.globl	_main                   ## -- Begin function main
+	.p2align	4, 0x90
+_main:                                  ## @main
+	.cfi_startproc
+## %bb.0:
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset %rbp, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register %rbp
+	movl	$0, -4(%rbp)
+	movl	$10, -8(%rbp)
+	cmpl	$10, -8(%rbp)
+	jne	LBB0_2
+## %bb.1:
+	movl	-8(%rbp), %eax
+	addl	$42, %eax
+	movl	%eax, -8(%rbp)
+LBB0_2:
+	xorl	%eax, %eax
+	popq	%rbp
+	retq
+	.cfi_endproc
+                                        ## -- End function
+
+.subsections_via_symbols
+```
+Explanation: A new section `LBB0_2` is added to end the code. 
+
+| Line No | Instruction | Meaning |
+| :---: | :---: | :---: |
+| 15 | cmpl $10, -8(%rbp) | Compare the value in %rbp with 10 |
+| 16 | jne LBB0_2 | If not equal jump to that section |
+
+It continues with the code for adding 42, which we have seen before. Else jumps to `LBB0_2` section: 
+
+| Line No | Instruction | Meaning |
+| :---: | :---: | :---: |
+| 22 | xorl %eax, %eax | To set %eax to zero |
+| 23 | popq %rbp | Clean up the stack frame |
+| 24 | retq | Clean up the stack frame |
+
+### Loops
+
+Code
+```
+int main(){
+	int i = 10;
+  while(i<20) i+=5;
+	return 0;
+}
+```
+
+Assembly
+```
+	.section	__TEXT,__text,regular,pure_instructions
+	.build_version macos, 10, 15	sdk_version 10, 15
+	.globl	_main                   ## -- Begin function main
+	.p2align	4, 0x90
+_main:                                  ## @main
+	.cfi_startproc
+## %bb.0:
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset %rbp, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register %rbp
+	movl	$0, -4(%rbp)
+	movl	$10, -8(%rbp)
+LBB0_1:                                 ## =>This Inner Loop Header: Depth=1
+	cmpl	$20, -8(%rbp)
+	jge	LBB0_3
+## %bb.2:                               ##   in Loop: Header=BB0_1 Depth=1
+	movl	-8(%rbp), %eax
+	addl	$5, %eax
+	movl	%eax, -8(%rbp)
+	jmp	LBB0_1
+LBB0_3:
+	xorl	%eax, %eax
+	popq	%rbp
+	retq
+	.cfi_endproc
+                                        ## -- End function
+
+.subsections_via_symbols
+```
+Explanation: Two sections have been added. `main` section corresponds to before loop. `LBB0_1` corresponds to loop section. `LBB0_3` corresponds to after loop section.  
+
+| Line No | Instruction | Meaning |
+| --- | --- | --- |
+| 16 | cmpl	$20, -8(%rbp) | Compare the value in %rbp with 20 |
+| 17 | jge	LBB0_3 | Jump if greater than or equal to LBB0_3 |
+| 19 | movl	-8(%rbp), %eax | Move the value in %rbp to %eax |
+| 20 | addl	$5, %eax | Add 5 to the value in %eax |
+| 21 | movl	%eax, -8(%rbp) | Move the value of %eax to %rbp |
+| 22 | jmp	LBB0_1 | Jump to LBB0_1 |
+
+After loop section `LBB0_3` is just cleaning up like the `LBB0_2` section of the previous conditional statement case.  
+
+### Sorting 
+Code 
+```
+void swap(int *a, int *b){
+	int t = *a;
+	*a = *b;
+	*b = t;
+}
+
+int main(){
+
+	int i,j,k;
+	int arr[] = {2,5,3,1};
+
+	for(i=0;i<4;i++)
+		for(j=i+1;j<4;j++)
+			if(arr[i]>arr[j])
+				swap(&arr[i],&arr[j]);
+
+	return 0;
+
+}
+```
+Assembly
+```
+	.section	__TEXT,__text,regular,pure_instructions
+	.build_version macos, 10, 15	sdk_version 10, 15
+	.globl	_swap                   ## -- Begin function swap
+	.p2align	4, 0x90
+_swap:                                  ## @swap
+	.cfi_startproc
+## %bb.0:
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset %rbp, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register %rbp
+	movq	%rdi, -8(%rbp)
+	movq	%rsi, -16(%rbp)
+	movq	-8(%rbp), %rsi
+	movl	(%rsi), %eax
+	movl	%eax, -20(%rbp)
+	movq	-16(%rbp), %rsi
+	movl	(%rsi), %eax
+	movq	-8(%rbp), %rsi
+	movl	%eax, (%rsi)
+	movl	-20(%rbp), %eax
+	movq	-16(%rbp), %rsi
+	movl	%eax, (%rsi)
+	popq	%rbp
+	retq
+	.cfi_endproc
+                                        ## -- End function
+	.globl	_main                   ## -- Begin function main
+	.p2align	4, 0x90
+_main:                                  ## @main
+	.cfi_startproc
+## %bb.0:
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset %rbp, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register %rbp
+	subq	$48, %rsp
+	movq	___stack_chk_guard@GOTPCREL(%rip), %rax
+	movq	(%rax), %rax
+	movq	%rax, -8(%rbp)
+	movl	$0, -36(%rbp)
+	movq	L___const.main.arr(%rip), %rax
+	movq	%rax, -32(%rbp)
+	movq	L___const.main.arr+8(%rip), %rax
+	movq	%rax, -24(%rbp)
+	movl	$0, -40(%rbp)
+LBB1_1:                                 ## =>This Loop Header: Depth=1
+                                        ##     Child Loop BB1_3 Depth 2
+	cmpl	$4, -40(%rbp)
+	jge	LBB1_10
+## %bb.2:                               ##   in Loop: Header=BB1_1 Depth=1
+	movl	-40(%rbp), %eax
+	addl	$1, %eax
+	movl	%eax, -44(%rbp)
+LBB1_3:                                 ##   Parent Loop BB1_1 Depth=1
+                                        ## =>  This Inner Loop Header: Depth=2
+	cmpl	$4, -44(%rbp)
+	jge	LBB1_8
+## %bb.4:                               ##   in Loop: Header=BB1_3 Depth=2
+	movslq	-40(%rbp), %rax
+	movl	-32(%rbp,%rax,4), %ecx
+	movslq	-44(%rbp), %rax
+	cmpl	-32(%rbp,%rax,4), %ecx
+	jle	LBB1_6
+## %bb.5:                               ##   in Loop: Header=BB1_3 Depth=2
+	movslq	-40(%rbp), %rax
+	shlq	$2, %rax
+	leaq	-32(%rbp), %rcx
+	movq	%rcx, %rdx
+	addq	%rax, %rdx
+	movslq	-44(%rbp), %rax
+	shlq	$2, %rax
+	addq	%rax, %rcx
+	movq	%rdx, %rdi
+	movq	%rcx, %rsi
+	callq	_swap
+LBB1_6:                                 ##   in Loop: Header=BB1_3 Depth=2
+	jmp	LBB1_7
+LBB1_7:                                 ##   in Loop: Header=BB1_3 Depth=2
+	movl	-44(%rbp), %eax
+	addl	$1, %eax
+	movl	%eax, -44(%rbp)
+	jmp	LBB1_3
+LBB1_8:                                 ##   in Loop: Header=BB1_1 Depth=1
+	jmp	LBB1_9
+LBB1_9:                                 ##   in Loop: Header=BB1_1 Depth=1
+	movl	-40(%rbp), %eax
+	addl	$1, %eax
+	movl	%eax, -40(%rbp)
+	jmp	LBB1_1
+LBB1_10:
+	movq	___stack_chk_guard@GOTPCREL(%rip), %rax
+	movq	(%rax), %rax
+	movq	-8(%rbp), %rcx
+	cmpq	%rcx, %rax
+	jne	LBB1_12
+## %bb.11:
+	xorl	%eax, %eax
+	addq	$48, %rsp
+	popq	%rbp
+	retq
+LBB1_12:
+	callq	___stack_chk_fail
+	ud2
+	.cfi_endproc
+                                        ## -- End function
+	.section	__TEXT,__literal16,16byte_literals
+	.p2align	4               ## @__const.main.arr
+L___const.main.arr:
+	.long	2                       ## 0x2
+	.long	5                       ## 0x5
+	.long	3                       ## 0x3
+	.long	1                       ## 0x1
+
+
+.subsections_via_symbols
+```
+
+Assembly with gdb support
+```
 	.section	__TEXT,__text,regular,pure_instructions
 	.build_version macos, 10, 15	sdk_version 10, 15
 	.globl	_main                   ## -- Begin function main
@@ -447,3 +844,6 @@ LpubTypes_end0:
 	.section	__DWARF,__debug_line,regular,debug
 Lsection_line:
 Lline_table_start0:
+```
+
+We can see that each instruction has additional information of line-no, coloumn-no and file in which it corresponds to. This helps in debugging.  
