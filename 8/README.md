@@ -31,7 +31,7 @@ The `q` in `movq` means quad.
 The instruction moves content of `rsp` to `rbp`.  
 
 If we run the code in gdb(or lldb) with a break point set, we can run `register read` to see the contents of register at any given point.
-[lldb example](./images/lldb.png)
+![lldb example](./images/lldb.png)
 
 ## Registers
 * rax, rbx, rcx and rdx are general purpose registers used to hold on to intermediate values loaded from memory or used during a calculation of some kind.  
@@ -846,4 +846,4 @@ Lsection_line:
 Lline_table_start0:
 ```
 
-We can see that each instruction has additional information of line-no, coloumn-no and file in which it corresponds to. This helps in debugging.  
+We can see that each instruction has additional information of `line-no`, `coloumn-no` and `file` in which it corresponds to. This helps in debugging.  
