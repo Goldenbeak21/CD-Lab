@@ -12,7 +12,10 @@ _main:                                  ## @main
 	.cfi_def_cfa_register %rbp
 	xorl	%eax, %eax
 	movl	$0, -4(%rbp)
-	movl	$42, -8(%rbp)
+	movl	$10, -8(%rbp)
+	movl	-8(%rbp), %ecx
+	addl	$42, %ecx
+	movl	%ecx, -8(%rbp)
 	popq	%rbp
 	retq
 	.cfi_endproc

@@ -10,9 +10,18 @@ _main:                                  ## @main
 	.cfi_offset %rbp, -16
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register %rbp
-	xorl	%eax, %eax
 	movl	$0, -4(%rbp)
-	movl	$42, -8(%rbp)
+	movl	$10, -8(%rbp)
+LBB0_1:                                 ## =>This Inner Loop Header: Depth=1
+	cmpl	$20, -8(%rbp)
+	jge	LBB0_3
+## %bb.2:                               ##   in Loop: Header=BB0_1 Depth=1
+	movl	-8(%rbp), %eax
+	addl	$5, %eax
+	movl	%eax, -8(%rbp)
+	jmp	LBB0_1
+LBB0_3:
+	xorl	%eax, %eax
 	popq	%rbp
 	retq
 	.cfi_endproc
