@@ -1,6 +1,5 @@
 %{
 #include<stdio.h>
-
 %}
 
 %token num
@@ -8,10 +7,11 @@
 %left '+' '-'
 %left '*' '/' '%'
 %left '(' ')'
+
 %%
 
-F : S {printf("\nValue = %d\n",$$);
-return 0; }
+F : S {printf("\nValue = %d\n",$$);return 0; }
+
 S : S '+' A { $$ = $1 + $3; }
 | A { $$ = $1;}
 ;
