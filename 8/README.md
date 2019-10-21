@@ -1,5 +1,5 @@
 # Assignment 8
-NAME : Tummala Madhav
+NAME : Tummala Madhav  
 ROLL : 16CS01041
 
 ## Commands
@@ -32,7 +32,8 @@ The `q` in `movq` means quad.
 `%` in operands means a register.  
 The instruction moves content of `rsp` to `rbp`.  
 
-If we run the code in gdb(or lldb) with a break point set, we can run `register read` to see the contents of register at any given point.
+If we run the code in gdb(or lldb) with a break point set, we can run `register read` to see the contents of register at any given point.  
+
 ![lldb example](./images/lldb.png)
 
 ## Registers
@@ -97,7 +98,7 @@ Code
 ```
 int main(){
 	int i = 10;
-  i += 42;
+  	i += 42;
 	return 0;
 }
 ```
@@ -143,7 +144,7 @@ Code
 ```
 int main(){
 	int i = 10;
-  if(i==10) i += 42;
+  	if(i==10) i += 42;
 	return 0;
 }
 ```
@@ -199,7 +200,7 @@ Code
 ```
 int main(){
 	int i = 10;
-  while(i<20) i+=5;
+  	while(i<20) i+=5;
 	return 0;
 }
 ```
