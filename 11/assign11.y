@@ -1,6 +1,6 @@
 %{
 
-#include<stdio.h>
+#include <stdio.h>
 #include <alloca.h>
 #include <math.h>
 #include <stdlib.h>
@@ -75,6 +75,7 @@ function: SIN OPBRCK expr CLBRCK
 #include <ctype.h>
 #include "lex.yy.c"
 #include <string.h>
+
 char *progname;
 
 yyerror( s )
