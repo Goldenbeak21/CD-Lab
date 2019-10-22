@@ -1,36 +1,20 @@
-%{ 
-  typedef struct node{
-      int isOp;
-      int type;
-      struct node *left;
-      struct node *right;
-  }node;
+%{
+#include <stdio.h>
 %}
 
-%% 
+%%
 
-[0-9]+	 		{ 
-					node *newnode=(node *)malloc(sizeof(node));
-					newnode->isOp=0;
-					newnode->left=NULL;
-					newnode->right=NULL;
-					newnode->type=atoi(yytext);
-					printf("NUMBER\n");
-				}		 
-[" "|"\t"|"\n"]	{} 
-. 				{printf("%s\n",yytext);}
+[0-9]+          {printf("NUMBER");}
+[a-z]           {printf("LETTER");}
+[" "|"\n"|"\t"] {}
+.               {printf("%c",yytext[0]);}
 
-%% 
+%%
 
-int yywrap() {return 1;}
+int yywrap()  {return 1;}
 
 int main(){
-
-    extern FILE *yyin, *yyout;
-
-    yyin = fopen("input.txt", "r");
-
+    printf("Enter the expression: ");
     yylex();
-
-    return 0;
+    return 1;
 }

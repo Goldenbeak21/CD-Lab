@@ -1,22 +1,26 @@
 %{
-#include<stdio.h>
 
-char temp = 'A'-1;
+  #include<stdio.h>
 
-#define YYSTYPE char
+  #define YYSTYPE char
 
-void yyerror(char *s);
-int yylex();
+  void yyerror(char *s);
+  char temp = 'A'-1;
+
+  #include "y.tab.h"
+  #include "lex.yy.c"
+
 %}
 
+
+%token LETTER NUMBER
 
 %left '+' '-'
 %left '/' '*'
 
-%token LETTER NUMBER
 %%
 
-statement: exp '\n' {printf("%c = %c\n", ++temp,(char)$1);};
+statement: exp {printf("%c = %c\n", ++temp,(char)$1);return 0;};
 exp: exp '+' exp {printf("%c = %c + %c\n", ++temp,(char)$1,(char)$3);$$ = temp;}
     |exp '-' exp {printf("%c = %c - %c\n", ++temp,(char)$1,(char)$3);$$ = temp;}
     |exp '/' exp {printf("%c = %c / %c\n", ++temp,(char)$1,(char)$3);$$ = temp;}
@@ -32,9 +36,8 @@ void yyerror(char *s){
     printf("Error %s",s);
 }
 
-int main() 
-{ 
-    extern FILE *yyin, *yyout;
-    yyin = fopen("input.txt", "r");
-    yylex();
-} 
+int main(){
+    printf("Enter the expression: ");
+    yyparse();
+    return 1;
+}
