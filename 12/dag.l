@@ -1,39 +1,35 @@
-%{
-	#include<stdio.h>
-	#include<stdlib.h>
-	#include<string.h>
-%}
+%{ 
+#include <stdio.h> 
+%} 
 
-number [0-9]+\.?|[0-9]*\.[0-9]+
+%% 
 
-%%
+[a-z] 		{
+				char temp[100];
+				sprintf(temp,"%s",yytext);
 
-[ \t]   { ; }
-log     return LOG;
-sin     return SIN;
-cos     return COS;
-tan     return TAN;
-sinh    return SINH;
-cosh    return COSH;
-tanh    return TANH;
-asin    return ASIN;
-acos    return ACOS;
-atan    return ATAN;
-ceil    return CEIL;
-floor   return FLOOR;
-abs     return ABS;
-{number} { yylval=atof(yytext);return NUMBER;}
-"+"     return PLUS;
-"-"     return MINUS;
-"/"     return DIV;
-"*"     return MUL;
-"^"     return POW;
-sqrt    return SQRT;
-"("     return OPBRCK;
-")"     return CLBRCK;
-"%"     return MOD;
-\n|. 	{return yytext[0];}
+				int ret = check(temp);
+				if(ret >= 0)
+					yylval = list[ret];
+				else
+				{
+					node *newnode=(node *)malloc(sizeof(node));
+					newnode->isOp=0;
+					newnode->left=NULL;
+					newnode->right=NULL;
+					newnode->type = yytext[0];
+					newnode->id = index1;
+					yylval = newnode;
 
-%%
+					list[index1] = yylval;
+					strcpy(expressions[index1++],temp);
+				}
+				return NUMBER;		
+			} 
+[" "|"\t"] 	; 
+[\n] 		{return 0;}
+. 			{return yytext[0];}
 
-int yywrap(void) {return 1;}
+%% 
+
+int yywrap()  {return 1;}

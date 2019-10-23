@@ -1,105 +1,194 @@
-%{
+%{ 
 
-#include <stdio.h>
-#include <alloca.h>
-#include <math.h>
-#include <stdlib.h>
-#include <stddef.h>
-#include <ctype.h>
-#include <string.h>
+  #include<stdio.h>
+  #include<stdlib.h>
+  #include<string.h>
 
-#define YYSTYPE double
+  typedef struct node{
+    int isOp;
+    char type;
+    int id;
+    struct node *left;
+    struct node *right;
+  }node;
 
-%}
+  #define YYSTYPE node*
 
-%token NUMBER MOD
-%token PLUS MINUS DIV MUL POW SQRT OPBRCK CLBRCK
-%token ASIN ACOS ATAN SIN SINH COS COSH TAN TANH LOG CEIL FLOOR ABS
+  void yyerror(char *s);
+  void postorder(node *x, int visited[]);
+  int check(char temp[100]);
 
-%%
+  int flag=0;
+  int index1=0;
+  char expressions[100][100];
+  node* list[100];
 
-calc	:	calc expr '\n'	{ printf("%g\n", $2); }
-	|	calc '\n'
-	|
-	;
-expr: pow
-      ;
-pow: add
-        | pow POW add { $$ = pow($1,$3); }
-        ;
-add: mul
-        | add PLUS mul  { $$ = $1 + $3;}
-        | add MINUS mul { $$ = $1 - $3; }
-        ;
-mul: primary
-        | mul MUL primary { $$ = $1 * $3; }
-        | mul DIV primary { $$ = $1 / $3; }
-        | mul MOD primary { $$ = fmod($1,$3); }
-        ;
-primary: OPBRCK expr CLBRCK { $$ = $2; }
-        | function
-        ;
-function: SIN OPBRCK expr CLBRCK
-               { $$ = sin($3); }
-        | COS OPBRCK expr CLBRCK
-               { $$ = cos($3); }
-        | ABS OPBRCK expr CLBRCK
-               { $$ = abs($3);}
-        | LOG OPBRCK expr CLBRCK
-               { $$ = log($3);}
-        | SQRT OPBRCK expr CLBRCK 
-               { $$ = sqrt($3); }               
-	      | SINH OPBRCK expr CLBRCK
-		           { $$ = sinh($3); }
-        | ASIN OPBRCK expr CLBRCK
-               { $$ = asin($3); }
-        | ACOS OPBRCK expr CLBRCK
-               { $$ = acos($3); }
-        | ATAN OPBRCK expr CLBRCK
-               { $$ = atan($3);}
-        | TAN OPBRCK expr CLBRCK
-               { $$ = tan($3);}
-        | COSH OPBRCK expr CLBRCK
-               { $$ = cosh($3);}
-        | TANH OPBRCK expr CLBRCK
-               { $$ = tanh($3);}
-	      | CEIL OPBRCK expr CLBRCK
-		           { $$ = ceil($3);}
-	      | FLOOR OPBRCK expr CLBRCK
-		           { $$ = floor($3);}              
-	      | NUMBER 
-        ;
-%%
+  #include "y.tab.h"
+  #include "lex.yy.c"
 
-#include <stdio.h>
-#include <ctype.h>
-#include "lex.yy.c"
-#include <string.h>
+%} 
+  
+%token NUMBER 
+  
+%left '+' '-'
+%left '*' '/'
+  
+%% 
+  
+ArithmeticExpression: 
+E
+  { 
+    printf("\nResult\n");
+    int visited[index1];
+    int i;
+    for(i=0;i<index1;i++) visited[i]=0;
+    postorder($1,visited);
+    printf("\n");
+  }; 
 
-char *progname;
+E:E'+'E 
+  {
+    char temp[100];
+    sprintf(temp,"%s + %s",expressions[$1->id],expressions[$3->id]);
 
-yyerror( s )
-char *s;
+    int ret = check(temp);
+    if(ret >= 0)
+      yyval = list[ret];
+    else
+    {
+      node *newnode=(node *)malloc(sizeof(node));
+      newnode->isOp=1;
+      newnode->type='+';
+      newnode->left=$1;
+      newnode->right=$3;
+      newnode->id = index1;
+
+      $$=newnode;
+
+      list[index1] = $$;
+      strcpy(expressions[index1++],temp);
+    }  
+  } 
+
+|E'-'E
+  {
+    char temp[100];
+    sprintf(temp,"%s - %s",expressions[$1->id],expressions[$3->id]);
+
+    int ret = check(temp);
+    if(ret >= 0)
+      yyval = list[ret];
+    else
+    {
+      node *newnode=(node *)malloc(sizeof(node));
+      newnode->isOp=1;
+      newnode->type='-';
+      newnode->left=$1;
+      newnode->right=$3;
+      newnode->id = index1;
+
+      $$=newnode;
+
+      list[index1] = $$;
+      strcpy(expressions[index1++],temp);
+    }  
+  } 
+
+|E'*'E 
+  {
+    char temp[100];
+    sprintf(temp,"%s * %s",expressions[$1->id],expressions[$3->id]);
+
+    int ret = check(temp);
+    if(ret >= 0)
+      yyval = list[ret];
+    else
+    {
+      node *newnode=(node *)malloc(sizeof(node));
+      newnode->isOp=1;
+      newnode->type='*';
+      newnode->left=$1;
+      newnode->right=$3;
+      newnode->id = index1;
+
+      $$=newnode;
+
+      list[index1] = $$;
+      strcpy(expressions[index1++],temp);
+    }   
+  }
+
+|E'/'E
+  {
+    char temp[100];
+    sprintf(temp,"%s / %s",expressions[$1->id], expressions[$3->id]);
+
+    int ret = check(temp);
+    if(ret >= 0)
+      yyval = list[ret];
+    else
+    {
+      node *newnode=(node *)malloc(sizeof(node));
+      newnode->isOp=1;
+      newnode->type='/';
+      newnode->left=$1;
+      newnode->right=$3;
+      newnode->id = index1;
+
+      $$=newnode;
+
+      list[index1] = $$;
+      strcpy(expressions[index1++],temp);
+    }
+  } 
+
+|NUMBER
+  {
+    $$=$1;
+  }
+;
+  
+%% 
+
+int main() 
+{ 
+   printf("Enter Any Arithmetic Expression with +,-,* and / only: "); 
+   yyparse(); 
+   return 1;
+} 
+
+int check(char temp[100]){
+
+  int i;
+  for(i=0;i<index1;i++){
+    if(strcmp(temp,expressions[i]) == 0){
+      return i;
+    }
+  }
+  return -1;
+}
+
+void postorder(node *x, int visited[])
 {
-  warning( s , ( char * )0 );
-  yyparse();
+  if(x==NULL)
+    return;
+
+  if(visited[x->id]){
+    printf("conn: %s\n",expressions[x->id]);
+    return;
+  }
+
+  visited[x->id] = 1;
+
+  postorder(x->left,visited);
+  postorder(x->right,visited);
+
+  printf("node: %c\n",x->type);
+
 }
 
-warning( s , t )
-char *s , *t;
-{
-  fprintf( stderr ,"%s: %s\n" , progname , s );
-  if ( t )
-  fprintf( stderr , " %s\n" , t );
-}
-
-int main(){
-
-  extern FILE *yyin, *yyout;
-
-  yyin = fopen("input.txt", "r");
-
-  yyparse();
-
-  return 0;
-}
+void yyerror(char *s) 
+{ 
+   printf("Entered arithmetic expression is Invalid\n"); 
+   flag=1; 
+} 
