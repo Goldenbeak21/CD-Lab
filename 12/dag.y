@@ -53,7 +53,7 @@ E:E'+'E
 
     int ret = check(temp);
     if(ret >= 0)
-      yyval = list[ret];
+      $$ = list[ret];
     else
     {
       node *newnode=(node *)malloc(sizeof(node));
@@ -77,7 +77,7 @@ E:E'+'E
 
     int ret = check(temp);
     if(ret >= 0)
-      yyval = list[ret];
+      $$ = list[ret];
     else
     {
       node *newnode=(node *)malloc(sizeof(node));
@@ -101,7 +101,7 @@ E:E'+'E
 
     int ret = check(temp);
     if(ret >= 0)
-      yyval = list[ret];
+      $$ = list[ret];
     else
     {
       node *newnode=(node *)malloc(sizeof(node));
@@ -125,7 +125,7 @@ E:E'+'E
 
     int ret = check(temp);
     if(ret >= 0)
-      yyval = list[ret];
+      $$ = list[ret];
     else
     {
       node *newnode=(node *)malloc(sizeof(node));
@@ -140,6 +140,11 @@ E:E'+'E
       list[index1] = $$;
       strcpy(expressions[index1++],temp);
     }
+  }
+
+|'('E')''
+  {
+    
   } 
 
 |NUMBER
@@ -174,7 +179,7 @@ void postorder(node *x, int visited[])
     return;
 
   if(visited[x->id]){
-    printf("conn: %s\n",expressions[x->id]);
+    printf("node: %s (done)\n",expressions[x->id]);
     return;
   }
 

@@ -1,42 +1,48 @@
-## Assignment 11
+## Assignment 12
 
 ### Run
 To compile the lex and yacc and run the code
-```
-./run.sh
+```bash
+./run.sh <name>
+ex:
+name: 3ac,ast,dag
 ```
 If the code is compiled.
-```
+```bash
 ./a.out
 ```
-The input is provided in `input.txt`. Remember to put an extra line for extra `\n`.
 
-### Functions
+### Working
 
-Function supported right now are
+#### Three Address Code
+The three address code is printed.  
 ```
-PLUS  
-MINUS  
-DIV  
-MUL  
-POW  
-SQRT  
-MOD  
-ASIN  
-ACOS  
-ATAN  
-SIN  
-SINH  
-COS  
-COSH  
-TAN  
-TANH  
-LOG  
-CEIL  
-FLOOR  
-ABS
+MadbookAir 12 ❯ ./run.sh 3ac
+Enter the expression: 2+3
+A = 2 + 3
+B = A
 ```
-All these functions use in-built C functions to perform the operations.  
-Brackets are also supported.  
 
-We can define our own function and add them in the same yacc file for performing for some more fucntions.  
+#### Abstract Syntax Tree
+Preorder of AST is printed.  
+```
+MadbookAir 12 ❯ ./run.sh ast
+Enter Any Arithmetic Expression with +,-,* and / only: 2+3*4
+
+Result
++ 2 * 3 4
+```
+
+#### Directed Acyclic Graph
+Post order of DAG is printed.
+```
+MadbookAir 12 ❯ ./run.sh dag
+Enter Any Arithmetic Expression with +,-,* and / only: a*b+a*b
+
+Result
+node: a
+node: b
+node: *
+node: a * b (done)
+node: +
+```
