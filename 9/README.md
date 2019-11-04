@@ -19,18 +19,18 @@ prog
 	int count
 end
 ```
-`error at count`
-|
-|
-|_______ `count;` (errors = 1)
-|
-|_______ `count := ic;` (errors = 3)
-|
-|_______ `count := fc;` (errors = 3)
+`error at count`</br>
+|</br>
+|</br>
+|_______ `count;` (errors = 1)</br>
+|</br>
+|_______ `count := ic;` (errors = 3)</br>
+|</br>
+|_______ `count := fc;` (errors = 3)</br>
 
-The optimal one is choosed, with only one error suggestion:
+The optimal one is choosed, with only one error suggestion:</br>
 `` Try adding ';' at line 1 ``
 
 ## Note
-The program is not working as expected in some cases.  
-A lot of debug output is printed.  
+The program is not working as expected in some cases. </br> 
+A lot of debug output is printed.  </br>
