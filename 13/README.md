@@ -54,4 +54,5 @@ rest of the program
 
 ### Contributors
 [Venu Madhav](https://github.com/venu22499)</br>
-[Tummala Madhav](https://github.com/MadhavChoudhary)
+[Tummala Madhav](https://github.com/MadhavChoudhary)</br>
+[Methuku Preetham](https://github.com/methuku123)    
